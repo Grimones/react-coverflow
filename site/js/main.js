@@ -14,6 +14,7 @@ ReactDOM.render(
     height={480}
     displayQuantityOfSide={2}
     navigation={false}
+    afterChange={index => console.log(index)}
     enableHeading={false}
   >
     <div

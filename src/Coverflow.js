@@ -58,6 +58,7 @@ class Coverflow extends Component {
     active: PropTypes.number,
     media: PropTypes.object,
     infiniteScroll: PropTypes.bool,
+    afterChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -69,6 +70,7 @@ class Coverflow extends Component {
     otherFigureScale: .8,
     media: {},
     infiniteScroll: false,
+    afterChange: () => {}
   };
 
   componentDidMount() {
@@ -302,7 +304,7 @@ class Coverflow extends Component {
   }
 
   _handlePrevFigure = () => {
-    const { displayQuantityOfSide, infiniteScroll } = this.props;
+    const { displayQuantityOfSide, infiniteScroll, afterChange } = this.props;
     const { width } = this.state;
     let { current } = this.state;
     let baseWidth = width / (displayQuantityOfSide * 2 + 1);
@@ -310,17 +312,21 @@ class Coverflow extends Component {
     let move = distance * baseWidth;
 
     if (current - 1 >= 0) {
-      this.setState({ current: current - 1, move });
+      this.setState({ current: current - 1, move }, () => {
+        afterChange(current - 1);
+      });
       TOUCH.lastMove = move;
     }
     if (current - 1 < 0 && infiniteScroll) {
-      this.setState({ current: this.props.children.length - 1, move });
+      this.setState({ current: this.props.children.length - 1, move }, () => {
+        afterChange(this.props.children.length - 1);
+      });
       TOUCH.lastMove = move;
     }
   }
 
   _handleNextFigure = () => {
-    const { displayQuantityOfSide, infiniteScroll } = this.props;
+    const { displayQuantityOfSide, infiniteScroll, afterChange } = this.props;
     const { width } = this.state;
     let { current } = this.state;
     let baseWidth = width / (displayQuantityOfSide * 2 + 1);
@@ -328,11 +334,15 @@ class Coverflow extends Component {
     let move = distance * baseWidth;
 
     if (current + 1 < this.props.children.length) {
-      this.setState({ current: current + 1, move });
+      this.setState({ current: current + 1, move }, () => {
+        afterChange(current + 1);
+      });
       TOUCH.lastMove = move;
     }
     if (current + 1 >= this.props.children.length && infiniteScroll) {
-      this.setState({ current: 0, move });
+      this.setState({ current: 0, move }, () => {
+        afterChange(this.props.children.length);
+      });
       TOUCH.lastMove = move;
     }
   }
