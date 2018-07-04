@@ -44,6 +44,8 @@ class Coverflow extends Component {
       width: this.props.width || 'auto',
       height: this.props.height || 'auto',
     };
+    this.figureRefs = [];
+    this.stageRef = undefined;
   }
   
   static propTypes = {
@@ -80,7 +82,7 @@ class Coverflow extends Component {
     TRANSITIONS.forEach(event => {
       for (let i = 0; i < length; i++) {
         let figureID = `figure_${i}`;
-        this.refs[figureID].addEventListener(event, HandleAnimationState.bind(this));
+        this.figureRefs[figureID].addEventListener(event, HandleAnimationState.bind(this));
       }
     });
     
@@ -103,7 +105,7 @@ class Coverflow extends Component {
     TRANSITIONS.forEach(event => {
       for (let i = 0; i < length; i++) {
         let figureID = `figure_${i}`;
-        this.refs[figureID].removeEventListener(event, HandleAnimationState.bind(this));
+        this.figureRefs[figureID].removeEventListener(event, HandleAnimationState.bind(this));
       }
     });
 
@@ -157,7 +159,7 @@ class Coverflow extends Component {
       >
         <div className={styles.coverflow}>
           <div className={styles.preloader}></div>
-          <div className={styles.stage} ref="stage">
+          <div className={styles.stage} ref={ref => this.stageRef = ref}>
             {this._renderFigureNodes()}
           </div>
           {
@@ -245,7 +247,7 @@ class Coverflow extends Component {
       return;
     }
 
-    this.refs.stage.style['pointerEvents'] = 'none';
+    this.stageRef.style['pointerEvents'] = 'none';
     if (this.state.current === index) {
       // If on the active figure
       if (typeof action === 'string') {
@@ -278,7 +280,7 @@ class Coverflow extends Component {
           key={index}
           onClick={(e) => this._handleFigureClick(index, figureElement.props['data-action'], e) }
           style={style}
-          ref={`figure_${index}`}
+          ref={ref => this.figureRefs[`figure_${index}`] = ref}
         >
           {figureElement}
           {
@@ -292,7 +294,7 @@ class Coverflow extends Component {
   }
 
   _removePointerEvents() {
-    this.refs.stage.style['pointerEvents'] = 'auto';
+    this.stageRef.style['pointerEvents'] = 'auto';
   }
 
   _hasPrevFigure = () => {
